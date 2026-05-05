@@ -1,0 +1,94 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}Assessment Results{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-header {% if attempt.passed %}bg-success{% else %}bg-danger{% endif %} text-white">
+            <h3>Assessment Results</h3>
+            <h4>{{ attempt.questionnaire.title }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="row text-center mb-4">
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="bi bi-percent text-primary"></i>
+                        <h3>{{ attempt.score|floatformat:2 }}%</h3>
+                        <p>Score</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <h3>{{ responses|length }}</h3>
+                        <p>Questions</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="bi bi-calendar text-info"></i>
+                        <h3>{{ attempt.completed_at|date:"M d" }}</h3>
+                        <p>Completed</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="bi bi-trophy {% if attempt.passed %}text-success{% else %}text-danger{% endif %}"></i>
+                        <h3>{% if attempt.passed %}PASS{% else %}FAIL{% endif %}</h3>
+                        <p>Result</p>
+                    </div>
+                </div>
+            </div>
+
+            <h5>Detailed Answers</h5>
+            {% for response in responses %}
+            <div class="card mb-3 {% if response.is_correct %}border-success{% elif not response.text_response %}border-danger{% endif %}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h6>Q{{ response.question.order }}. {{ response.question.question_text }}</h6>
+                        <span class="badge {% if response.is_correct %}bg-success{% elif response.text_response %}bg-secondary{% else %}bg-danger{% endif %}">
+                            {% if response.is_correct %}Correct{% elif response.text_response %}Text Answer{% else %}Incorrect{% endif %}
+                        </span>
+                    </div>
+
+                    {% if response.selected_option %}
+                        <p class="mb-1"><strong>Your Answer:</strong> {{ response.selected_option.option_text }}</p>
+                        {% if not response.is_correct %}
+                            {% for option in response.question.options.all %}
+                                {% if option.is_correct %}
+                                    <p class="text-success"><strong>Correct Answer:</strong> {{ option.option_text }}</p>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% elif response.rating_value %}
+                        <p><strong>Your Rating:</strong> {{ response.rating_value }}/5</p>
+                    {% elif response.text_response %}
+                        <p><strong>Your Answer:</strong></p>
+                        <p class="border p-2 rounded">{{ response.text_response }}</p>
+                    {% endif %}
+
+                    {% if response.question.explanation %}
+                        <div class="alert alert-info mt-2">
+                            <strong>Explanation:</strong> {{ response.question.explanation }}
+                        </div>
+                    {% endif %}
+
+                    <small class="text-muted">Points: {{ response.points_earned }}/{{ response.question.points }}</small>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="d-grid gap-2 mt-4">
+                <a href="{% url 'assessments:questionnaire_detail' attempt.questionnaire.pk %}" class="btn btn-primary">
+                    Back to Assessment
+                </a>
+                <a href="{% url 'assessments:my_attempts' %}" class="btn btn-secondary">
+                    View All Attempts
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

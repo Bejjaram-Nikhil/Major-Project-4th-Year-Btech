@@ -1,0 +1,88 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}{{ mentorship.title }}{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{% url 'inclusivity:mentorship_list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-people"></i> {{ mentorship.title }}</h4>
+            </div>
+            <div class="card-body">
+                <h5>Description</h5>
+                <p class="lead">{{ mentorship.description }}</p>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong><i class="bi bi-clock"></i> Duration:</strong>
+                        <p>{{ mentorship.duration_weeks }} weeks</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong><i class="bi bi-calendar"></i> Start Date:</strong>
+                        <p>{{ mentorship.start_date|date:"M d, Y" }}</p>
+                    </div>
+                </div>
+                
+                {% if mentorship.objectives %}
+                <hr>
+                <h5>Program Objectives</h5>
+                <p>{{ mentorship.objectives|linebreaks }}</p>
+                {% endif %}
+                
+                {% if mentorship.participants.all %}
+                <hr>
+                <h5>Participants ({{ mentorship.participants.count }})</h5>
+                <div class="list-group">
+                    {% for participant in mentorship.participants.all %}
+                    <div class="list-group-item">
+                        {{ participant.get_full_name }} - {{ participant.get_role_display }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                {% if user.role == 'student' and user not in mentorship.participants.all %}
+                <a href="{% url 'inclusivity:mentorship_join' mentorship.pk %}" class="btn btn-success">
+                    <i class="bi bi-person-plus"></i> Join Program
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Program Info</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Duration</span>
+                        <strong>{{ mentorship.duration_weeks }} weeks</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Participants</span>
+                        <strong>{{ mentorship.participants.count }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Start Date</span>
+                        <strong>{{ mentorship.start_date|date:"M d" }}</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

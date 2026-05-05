@@ -1,0 +1,96 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="mb-4"><i class="bi bi-speedometer2"></i> Student Dashboard</h1>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body text-center">
+                <i class="bi bi-book" style="font-size: 3rem;"></i>
+                <h3 class="mt-3">{{ modules_started }}</h3>
+                <p class="mb-0">Modules Started</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body text-center">
+                <i class="bi bi-check-circle" style="font-size: 3rem;"></i>
+                <h3 class="mt-3">{{ modules_completed }}</h3>
+                <p class="mb-0">Modules Completed</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body text-center">
+                <i class="bi bi-clipboard-check" style="font-size: 3rem;"></i>
+                <h3 class="mt-3">{{ assessments_taken }}</h3>
+                <p class="mb-0">Assessments Taken</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body text-center">
+                <i class="bi bi-upload" style="font-size: 3rem;"></i>
+                <h3 class="mt-3">{{ assignments_submitted }}</h3>
+                <p class="mb-0">Assignments</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Recent Progress</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_progress %}
+                <div class="list-group list-group-flush">
+                    {% for progress in recent_progress %}
+                    <div class="list-group-item">
+                        <h6 class="mb-1">{{ progress.module.title }}</h6>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: {{ progress.progress_percentage }}%">
+                                {{ progress.progress_percentage }}%
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-center text-muted">No progress yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-clipboard-check"></i> Recent Assessments</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_attempts %}
+                <div class="list-group list-group-flush">
+                    {% for attempt in recent_attempts %}
+                    <div class="list-group-item d-flex justify-content-between">
+                        <span>{{ attempt.questionnaire.title }}</span>
+                        <span class="badge bg-primary">{{ attempt.score }}%</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-center text-muted">No assessments yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

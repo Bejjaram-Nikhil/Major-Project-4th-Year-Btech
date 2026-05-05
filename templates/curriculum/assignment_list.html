@@ -1,0 +1,53 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}Assignments{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-file-earmark-text"></i> Assignments</h1>
+    {% if user.role in 'admin,faculty,researcher' %}
+    <a href="{% url 'curriculum:assignment_create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Create Assignment
+    </a>
+    {% endif %}
+</div>
+
+<div class="row">
+    {% for assignment in assignments %}
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">{{ assignment.title }}</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ assignment.description|truncatewords:15 }}</p>
+                <div class="mb-2">
+                    <span class="badge bg-primary">{{ assignment.curriculum.discipline }}</span>
+                    <span class="badge bg-secondary">{{ assignment.max_points }} points</span>
+                </div>
+                <p class="text-muted small">
+                    <i class="bi bi-calendar"></i> Due: {{ assignment.due_date|date:"M d, Y" }}
+                </p>
+            </div>
+            <div class="card-footer bg-light">
+                <a href="{% url 'curriculum:assignment_detail' assignment.pk %}" class="btn btn-sm btn-info">
+                    <i class="bi bi-eye"></i> View
+                </a>
+                {% if user.role == 'student' %}
+                <a href="{% url 'curriculum:assignment_submit' assignment.pk %}" class="btn btn-sm btn-success">
+                    <i class="bi bi-upload"></i> Submit
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> No assignments available.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}{{ framework.title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'ai_literacy:framework_list' %}">Frameworks</a></li>
+            <li class="breadcrumb-item active">{{ framework.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">{{ framework.title }}</h3>
+            {% if user.role in 'faculty,researcher,admin' %}
+            <div>
+                <a href="{% url 'ai_literacy:framework_edit' framework.pk %}" class="btn btn-warning btn-sm">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="{% url 'ai_literacy:module_create' %}?framework={{ framework.pk }}" class="btn btn-success btn-sm">
+                    <i class="bi bi-plus-circle"></i> Add Module
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <p>{{ framework.description }}</p>
+            
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Difficulty Level:</strong>
+                    <span class="badge bg-info">{{ framework.get_difficulty_level_display }}</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>Discipline:</strong>
+                    <span class="badge bg-secondary">{{ framework.discipline|default:"General" }}</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>Total Modules:</strong>
+                    <span class="badge bg-primary">{{ framework.modules.count }}</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>Created By:</strong>
+                    {{ framework.created_by.get_full_name }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="mb-3"><i class="bi bi-book"></i> Learning Modules</h4>
+
+    {% if user.role == 'student' %}
+        {% for item in progress_data %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5>{{ item.module.title }}</h5>
+                        <p class="text-muted mb-2">{{ item.module.description|truncatewords:30 }}</p>
+                        <small class="text-muted">
+                            <i class="bi bi-clock"></i> {{ item.module.duration_minutes }} minutes
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        {% if item.progress %}
+                            <div class="progress mb-2" style="height: 25px;">
+                                <div class="progress-bar" style="width: {{ item.progress.progress_percentage }}%;">
+                                    {{ item.progress.progress_percentage }}%
+                                </div>
+                            </div>
+                            {% if item.progress.completed_at %}
+                                <span class="badge bg-success">Completed</span>
+                            {% else %}
+                                <a href="{% url 'ai_literacy:module_detail' item.module.pk %}" class="btn btn-primary btn-sm">
+                                    Continue Learning
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'ai_literacy:module_start' item.module.pk %}" class="btn btn-success btn-sm">
+                                <i class="bi bi-play-circle"></i> Start Learning
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="list-group">
+            {% for module in modules %}
+            <a href="{% url 'ai_literacy:module_detail' module.pk %}" class="list-group-item list-group-item-action">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">{{ module.order }}. {{ module.title }}</h6>
+                        <p class="mb-1 text-muted">{{ module.description|truncatewords:20 }}</p>
+                        <small><i class="bi bi-clock"></i> {{ module.duration_minutes }} min</small>
+                    </div>
+                    <div>
+                        {% if module.is_published %}
+                            <span class="badge bg-success">Published</span>
+                        {% else %}
+                            <span class="badge bg-warning">Draft</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <div class="alert alert-info">No modules added yet.</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'base_auth.html' %}
+
+{% block title %}Feedback Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>
+                    <i class="bi bi-chat-left-text text-primary"></i> Feedback Details
+                </h2>
+                <a href="{% url 'feedback:my_feedback' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to My Feedback
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ feedback.subject }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <span class="badge bg-info">{{ feedback.get_category_display }}</span>
+                        <span class="badge 
+                            {% if feedback.status == 'pending' %}bg-warning
+                            {% elif feedback.status == 'in_review' %}bg-info
+                            {% elif feedback.status == 'resolved' %}bg-success
+                            {% else %}bg-secondary{% endif %}">
+                            {{ feedback.get_status_display }}
+                        </span>
+                        <span class="badge bg-secondary">{{ feedback.get_priority_display }} Priority</span>
+                    </div>
+
+                    <h6><i class="bi bi-chat-left-dots"></i> Your Message</h6>
+                    <p class="mb-4">{{ feedback.message|linebreaks }}</p>
+
+                    {% if feedback.admin_response %}
+                    <hr>
+                    <div class="alert alert-success">
+                        <h6><i class="bi bi-reply"></i> Admin Response</h6>
+                        <p class="mb-2">{{ feedback.admin_response|linebreaks }}</p>
+                        <small class="text-muted">
+                            Responded by {{ feedback.responded_by.get_full_name|default:feedback.responded_by.username }} 
+                            on {{ feedback.responded_at|date:"F d, Y \a\t h:i A" }}
+                        </small>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-clock"></i> Waiting for admin response...
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="bi bi-info-circle"></i> Feedback Info</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm table-borderless mb-0">
+                        <tr>
+                            <th>Status:</th>
+                            <td>
+                                <span class="badge 
+                                    {% if feedback.status == 'pending' %}bg-warning
+                                    {% elif feedback.status == 'in_review' %}bg-info
+                                    {% elif feedback.status == 'resolved' %}bg-success
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ feedback.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Priority:</th>
+                            <td><span class="badge bg-secondary">{{ feedback.get_priority_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Submitted:</th>
+                            <td>{{ feedback.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Last Updated:</th>
+                            <td>{{ feedback.updated_at|date:"M d, Y" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

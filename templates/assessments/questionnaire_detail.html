@@ -1,0 +1,144 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}{{ questionnaire.title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'assessments:questionnaire_list' %}">Assessments</a></li>
+            <li class="breadcrumb-item active">{{ questionnaire.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>{{ questionnaire.title }}</h3>
+                </div>
+                <div class="card-body">
+                    <p>{{ questionnaire.description }}</p>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <strong>Category:</strong><br>
+                            <span class="badge bg-primary">{{ questionnaire.get_category_display }}</span>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Questions:</strong><br>
+                            {{ questionnaire.total_questions }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Time Limit:</strong><br>
+                            {{ questionnaire.time_limit_minutes }} min
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Passing Score:</strong><br>
+                            {{ questionnaire.passing_score }}%
+                        </div>
+                    </div>
+
+                    {% if user.role == 'student' %}
+                    <hr>
+                    <h5>Your Attempts</h5>
+                    {% if user_attempts %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Score</th>
+                                        <th>Result</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for attempt in user_attempts %}
+                                    <tr>
+                                        <td>{{ attempt.completed_at|date:"M d, Y H:i" }}</td>
+                                        <td>{{ attempt.score|floatformat:2 }}%</td>
+                                        <td>
+                                            {% if attempt.passed %}
+                                                <span class="badge bg-success">Passed</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Failed</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'assessments:attempt_detail' attempt.pk %}" class="btn btn-sm btn-info">
+                                                View Results
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">You haven't attempted this assessment yet.</p>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 mt-3">
+                        <a href="{% url 'assessments:take_assessment' questionnaire.pk %}" class="btn btn-success btn-lg">
+                            <i class="bi bi-play-circle"></i> Take Assessment
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if user.role in 'faculty,researcher,admin' %}
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <span>Questions</span>
+                    <a href="{% url 'assessments:question_create' questionnaire.pk %}" class="btn btn-sm btn-success">
+                        <i class="bi bi-plus"></i> Add Question
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% for question in questions %}
+                    <div class="mb-3 p-3 border rounded">
+                        <h6>Q{{ question.order }}. {{ question.question_text }}</h6>
+                        <small class="text-muted">Type: {{ question.get_question_type_display }} | Points: {{ question.points }}</small>
+                        
+                        {% if question.question_type == 'mcq' or question.question_type == 'true_false' %}
+                        <ul class="mt-2">
+                            {% for option in question.options.all %}
+                            <li {% if option.is_correct %}class="text-success fw-bold"{% endif %}>
+                                {{ option.option_text }}
+                                {% if option.is_correct %}<i class="bi bi-check-circle text-success"></i>{% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        
+                        <a href="{% url 'assessments:question_edit' question.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No questions added yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            {% if user.role in 'faculty,researcher,admin' %}
+            <div class="card">
+                <div class="card-header">Actions</div>
+                <div class="card-body d-grid gap-2">
+                    <a href="{% url 'assessments:questionnaire_edit' questionnaire.pk %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Edit Assessment
+                    </a>
+                    <a href="{% url 'assessments:question_create' questionnaire.pk %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Add Question
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends 'base_auth.html' %}
+
+{% block title %}{{ principle.title }} - Ethical Principle{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'ethics:principle_list' %}">Ethical Principles</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ principle.title }}</li>
+                </ol>
+            </nav>
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h2 class="mb-2">
+                        <i class="fas fa-balance-scale text-primary"></i>
+                        {{ principle.title }}
+                    </h2>
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="badge bg-primary">{{ principle.get_category_display }}</span>
+                        <small class="text-muted">
+                            <i class="fas fa-user"></i> Created by {{ principle.created_by.get_full_name|default:principle.created_by.username }}
+                        </small>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar"></i> {{ principle.created_at|date:"F d, Y" }}
+                        </small>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    {% if user.role in 'faculty,researcher,admin' %}
+                    <a href="{% url 'ethics:principle_edit' principle.pk %}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'ethics:principle_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Description Card -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-info-circle"></i> Description</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="lead">{{ principle.description|linebreaks }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Importance Card (if exists) -->
+                    {% if principle.importance %}
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0"><i class="fas fa-star"></i> Why This Matters</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ principle.importance|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Examples Card (if exists) -->
+                    {% if principle.examples %}
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Examples</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ principle.examples|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Guidelines Card (if exists) -->
+                    {% if principle.guidelines %}
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-list-check"></i> Implementation Guidelines</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ principle.guidelines|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Related Resources (if exists) -->
+                    {% if principle.related_resources %}
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0"><i class="fas fa-link"></i> Related Resources</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ principle.related_resources|linebreaks|urlize }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <!-- Quick Info Card -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-info"></i> Quick Info</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-5">Category:</dt>
+                                <dd class="col-sm-7">
+                                    <span class="badge bg-primary">{{ principle.get_category_display }}</span>
+                                </dd>
+
+                                <dt class="col-sm-5">Created By:</dt>
+                                <dd class="col-sm-7">{{ principle.created_by.get_full_name|default:principle.created_by.username }}</dd>
+
+                                <dt class="col-sm-5">Created On:</dt>
+                                <dd class="col-sm-7">{{ principle.created_at|date:"M d, Y" }}</dd>
+
+                                <dt class="col-sm-5">Last Updated:</dt>
+                                <dd class="col-sm-7">{{ principle.updated_at|date:"M d, Y" }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <!-- Related Case Studies (if applicable) -->
+                    {% if principle.case_studies.exists %}
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-book"></i> Related Case Studies</h5>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            {% for case_study in principle.case_studies.all|slice:":5" %}
+                            <a href="{% url 'ethics:case_study_detail' case_study.pk %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ case_study.title }}</h6>
+                                    <small class="badge bg-secondary">{{ case_study.get_difficulty_level_display }}</small>
+                                </div>
+                                <small class="text-muted">{{ case_study.scenario|truncatewords:15 }}</small>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Actions Card -->
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-tasks"></i> Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                {% if user.role in 'faculty,researcher,admin' %}
+                                <a href="{% url 'ethics:principle_edit' principle.pk %}" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i> Edit Principle
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'ethics:case_study_list' %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-book"></i> View Case Studies
+                                </a>
+                                <a href="{% url 'ethics:forum_list' %}" class="btn btn-outline-success">
+                                    <i class="fas fa-comments"></i> Discussion Forums
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

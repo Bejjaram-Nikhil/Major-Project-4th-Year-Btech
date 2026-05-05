@@ -1,0 +1,317 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Literacy Platform{% endblock %}</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+
+        #wrapper {
+            display: flex;
+            width: 100%;
+        }
+
+        {% if user.is_authenticated %}
+        /* Sidebar styles - only when logged in */
+        #sidebar-wrapper {
+            min-width: 250px;
+            max-width: 250px;
+            background-color: #1a1a1a;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        #page-content-wrapper {
+            width: 100%;
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+        {% else %}
+        /* No sidebar when not logged in */
+        #page-content-wrapper {
+            width: 100%;
+            margin-left: 0;
+            min-height: 100vh;
+        }
+        {% endif %}
+
+        .sidebar-heading {
+            padding: 1.25rem 1rem;
+            font-size: 1.25rem;
+            background-color: #0d6efd;
+        }
+
+        .list-group-item {
+            border: none;
+            padding: 0.75rem 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .list-group-item:hover {
+            background-color: #343a40 !important;
+            padding-left: 1.5rem;
+        }
+
+        .list-group-item i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        /* Remove gaps between sections */
+        .list-group-flush small.text-muted {
+            margin-top: 0.5rem !important;
+            margin-bottom: 0.25rem !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        .list-group-flush hr {
+            margin: 0.5rem 0 !important;
+            opacity: 0.3;
+        }
+
+        /* Scrollbar styling */
+        #sidebar-wrapper::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #sidebar-wrapper::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        #sidebar-wrapper::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+
+        #sidebar-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            {% if user.is_authenticated %}
+            #sidebar-wrapper {
+                min-width: 200px;
+                max-width: 200px;
+            }
+
+            #page-content-wrapper {
+                margin-left: 200px;
+            }
+            {% endif %}
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div id="wrapper">
+        <!-- Sidebar - Only show when logged in -->
+        {% if user.is_authenticated %}
+        <div class="bg-dark text-white" id="sidebar-wrapper">
+            <div class="sidebar-heading text-center fw-bold border-bottom">
+                <i class="bi bi-robot"></i> AI Literacy
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{% url 'accounts:dashboard' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="bi bi-house-door"></i> Dashboard
+                </a>
+                
+                {% if user.role == 'student' %}
+                    <!-- Student Navigation -->
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">LEARNING</small>
+                    <a href="{% url 'ai_literacy:framework_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-book"></i> Frameworks
+                    </a>
+                    <a href="{% url 'ai_literacy:my_progress' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-graph-up"></i> My Progress
+                    </a>
+                    
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">ASSESSMENTS</small>
+                    <a href="{% url 'assessments:questionnaire_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-clipboard-check"></i> Assessments
+                    </a>
+                    <a href="{% url 'assessments:my_attempts' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-award"></i> My Results
+                    </a>
+                    
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">CURRICULUM</small>
+                    <a href="{% url 'curriculum:assignment_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-file-earmark-text"></i> Assignments
+                    </a>
+                    <a href="{% url 'curriculum:my_submissions' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-upload"></i> Submissions
+                    </a>
+                    
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">INTERVENTIONS</small>
+                    <a href="{% url 'inclusivity:intervention_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-diagram-3"></i> Interventions
+                    </a>
+                    
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">ETHICS</small>
+                    <a href="{% url 'ethics:principle_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-shield-check"></i> Principles
+                    </a>
+                    <a href="{% url 'ethics:case_study_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-lightbulb"></i> Case Studies
+                    </a>
+                    <a href="{% url 'ethics:forum_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-chat-square-text"></i> Discussions
+                    </a>
+                    
+                    <!-- Student Feedback Section -->
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">SUPPORT</small>
+                    <a href="{% url 'feedback:my_feedback' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-chat-left-text"></i> My Feedback
+                    </a>
+                
+                {% elif user.role == 'admin' %}
+                    <!-- Admin Navigation -->
+                    
+                    <!-- User Management - ONLY FOR ADMIN -->
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">ADMINISTRATION</small>
+                    <a href="{% url 'accounts:user_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-person-lines-fill"></i> Users
+                    </a>
+                    
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">FRAMEWORKS</small>
+                    <a href="{% url 'ai_literacy:framework_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-collection"></i> Frameworks
+                    </a>
+                    
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">ASSESSMENTS</small>
+                    <a href="{% url 'assessments:questionnaire_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-clipboard-data"></i> Assessments
+                    </a>
+                    
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">CURRICULUM</small>
+                    <a href="{% url 'curriculum:curriculum_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-journal-code"></i> Curriculum
+                    </a>
+                    
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">INTERVENTIONS</small>
+                    <a href="{% url 'inclusivity:intervention_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-diagram-3"></i> Interventions
+                    </a>
+                    
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">ETHICS</small>
+                    <a href="{% url 'ethics:principle_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-shield-check"></i> Principles
+                    </a>
+                    <a href="{% url 'ethics:case_study_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-lightbulb"></i> Case Studies
+                    </a>
+                    <a href="{% url 'ethics:forum_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-chat-square-text"></i> Discussions
+                    </a>
+                    
+                    <!-- Admin Feedback Management - NO SUBMIT, ONLY MANAGE -->
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">FEEDBACK</small>
+                    <a href="{% url 'feedback:feedback_list_admin' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-inbox"></i> Manage Feedback
+                    </a>
+                
+                {% else %}
+                    <!-- Faculty/Researcher Navigation -->
+                    
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">FRAMEWORKS</small>
+                    <a href="{% url 'ai_literacy:framework_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-collection"></i> Frameworks
+                    </a>
+                    
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">ASSESSMENTS</small>
+                    <a href="{% url 'assessments:questionnaire_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-clipboard-data"></i> Assessments
+                    </a>
+                    
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">CURRICULUM</small>
+                    <a href="{% url 'curriculum:curriculum_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-journal-code"></i> Curriculum
+                    </a>
+                    
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">INTERVENTIONS</small>
+                    <a href="{% url 'inclusivity:intervention_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-diagram-3"></i> Interventions
+                    </a>
+                    
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">ETHICS</small>
+                    <a href="{% url 'ethics:principle_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-shield-check"></i> Principles
+                    </a>
+                    <a href="{% url 'ethics:case_study_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-lightbulb"></i> Case Studies
+                    </a>
+                    <a href="{% url 'ethics:forum_list' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-chat-square-text"></i> Discussions
+                    </a>
+                    
+                    <!-- Faculty/Researcher Feedback Section -->
+                    <small class="text-muted px-3 d-block mt-3" style="font-size: 0.7rem; font-weight: 600;">SUPPORT</small>
+                    <a href="{% url 'feedback:my_feedback' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                        <i class="bi bi-chat-left-text"></i> My Feedback
+                    </a>
+                {% endif %}
+                
+                <hr class="bg-secondary my-3">
+                <a href="{% url 'accounts:profile' %}" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="bi bi-person-circle"></i> Profile
+                </a>
+                
+                <!-- Logout Form -->
+                <form method="post" action="{% url 'accounts:logout' %}" id="logout-form" style="display: none;">
+                    {% csrf_token %}
+                </form>
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
+                   class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            {% if user.is_authenticated %}
+            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+                <div class="container-fluid">
+                    <div class="ms-auto">
+                        <span><strong>{{ user.get_full_name|default:user.username }}</strong> <span class="badge bg-primary">{{ user.get_role_display }}</span></span>
+                    </div>
+                </div>
+            </nav>
+            {% endif %}
+            
+            <div class="container-fluid p-4">
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

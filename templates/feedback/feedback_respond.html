@@ -1,0 +1,80 @@
+{% extends 'base_auth.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Respond to Feedback{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-reply text-primary"></i> Respond to Feedback
+                </h2>
+                <a href="{% url 'feedback:feedback_list_admin' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+
+            <!-- Original Feedback -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Original Feedback</h5>
+                </div>
+                <div class="card-body">
+                    <h6>{{ feedback.subject }}</h6>
+                    <p class="mb-2">{{ feedback.message }}</p>
+                    <small class="text-muted">
+                        Submitted by <strong>{{ feedback.user.username }}</strong> on {{ feedback.created_at|date:"F d, Y" }}
+                    </small>
+                </div>
+            </div>
+
+            <!-- Response Form -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Your Response</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">
+                                    <i class="bi bi-check-circle"></i> Status <span class="text-danger">*</span>
+                                </label>
+                                {{ form.status }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.priority.id_for_label }}" class="form-label">
+                                    <i class="bi bi-flag"></i> Priority <span class="text-danger">*</span>
+                                </label>
+                                {{ form.priority }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.admin_response.id_for_label }}" class="form-label">
+                                <i class="bi bi-chat-left-dots"></i> Response Message
+                            </label>
+                            {{ form.admin_response }}
+                            <small class="form-text text-muted">Your response will be visible to the user</small>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send"></i> Send Response
+                            </button>
+                            <a href="{% url 'feedback:feedback_list_admin' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

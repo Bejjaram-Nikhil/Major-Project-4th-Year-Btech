@@ -1,0 +1,118 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}{{ module.title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'ai_literacy:framework_list' %}">Frameworks</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'ai_literacy:framework_detail' module.framework.pk %}">{{ module.framework.title }}</a></li>
+            <li class="breadcrumb-item active">{{ module.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>{{ module.title }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <span class="badge bg-primary">{{ module.framework.title }}</span>
+                        <span class="badge bg-info"><i class="bi bi-clock"></i> {{ module.duration_minutes }} minutes</span>
+                    </div>
+
+                    <h5>Description</h5>
+                    <p>{{ module.description }}</p>
+
+                    <hr>
+
+                    <h5>Content</h5>
+                    <div class="content-section">
+                        {{ module.content|linebreaks }}
+                    </div>
+
+                    {% if module.video_url %}
+                    <hr>
+                    <h5>Video Resource</h5>
+                    <div class="ratio ratio-16x9">
+                        <iframe src="{{ module.video_url }}" allowfullscreen></iframe>
+                    </div>
+                    {% endif %}
+
+                    {% if module.document %}
+                    <hr>
+                    <h5>Additional Materials</h5>
+                    <a href="{{ module.document.url }}" class="btn btn-outline-primary" download>
+                        <i class="bi bi-download"></i> Download Material
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            {% if user.role == 'student' %}
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-graph-up"></i> Your Progress
+                </div>
+                <div class="card-body text-center">
+                    {% if progress %}
+                        <div class="mb-3">
+                            <div class="progress" style="height: 30px;">
+                                <div class="progress-bar" style="width: {{ progress.progress_percentage }}%;">
+                                    {{ progress.progress_percentage }}%
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p><strong>Time Spent:</strong> {{ progress.time_spent_minutes }} minutes</p>
+                        
+                        {% if progress.completed_at %}
+                            <div class="alert alert-success">
+                                <i class="bi bi-check-circle"></i> Completed on {{ progress.completed_at|date:"M d, Y" }}
+                            </div>
+                        {% else %}
+                            <form method="post" action="{% url 'ai_literacy:module_complete' module.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-check-circle"></i> Mark as Complete
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% else %}
+                        <p>You haven't started this module yet.</p>
+                        <a href="{% url 'ai_literacy:module_start' module.pk %}" class="btn btn-primary w-100">
+                            <i class="bi bi-play-circle"></i> Start Learning
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if user.role in 'faculty,researcher,admin' %}
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-gear"></i> Module Actions
+                </div>
+                <div class="card-body d-grid gap-2">
+                    <a href="{% url 'ai_literacy:module_edit' module.pk %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Edit Module
+                    </a>
+                    <form method="post" action="{% url 'ai_literacy:module_delete' module.pk %}" onsubmit="return confirm('Are you sure you want to delete this module?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger w-100">
+                            <i class="bi bi-trash"></i> Delete Module
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}{% if curriculum %}Edit{% else %}Create{% endif %} Curriculum{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-journal-code"></i> 
+                    {% if curriculum %}Edit Curriculum{% else %}Create New Curriculum{% endif %}
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Title *</label>
+                        {% render_field form.title class="form-control" placeholder="Curriculum Title" %}
+                        {% if form.title.errors %}
+                            <div class="text-danger small mt-1">{{ form.title.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Description *</label>
+                        {% render_field form.description class="form-control" rows="4" placeholder="Describe the curriculum..." %}
+                        {% if form.description.errors %}
+                            <div class="text-danger small mt-1">{{ form.description.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Discipline *</label>
+                            {% render_field form.discipline class="form-control" placeholder="e.g., Computer Science" %}
+                            {% if form.discipline.errors %}
+                                <div class="text-danger small mt-1">{{ form.discipline.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Level *</label>
+                            {% render_field form.level class="form-select" %}
+                            {% if form.level.errors %}
+                                <div class="text-danger small mt-1">{{ form.level.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Duration (weeks) *</label>
+                        {% render_field form.duration_weeks class="form-control" type="number" min="1" %}
+                        {% if form.duration_weeks.errors %}
+                            <div class="text-danger small mt-1">{{ form.duration_weeks.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Learning Outcomes</label>
+                        {% render_field form.learning_outcomes class="form-control" rows="4" placeholder="Expected learning outcomes..." %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Assessment Methods</label>
+                        {% render_field form.assessment_methods class="form-control" rows="3" placeholder="How students will be assessed..." %}
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save"></i> {% if curriculum %}Update{% else %}Create{% endif %} Curriculum
+                        </button>
+                        <a href="{% url 'curriculum:curriculum_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

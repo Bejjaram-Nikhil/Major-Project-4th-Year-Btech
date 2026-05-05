@@ -1,0 +1,15 @@
+#Python 3.11.9 
+pip install django==5.0
+pip install mysqlclient
+pip install pillow
+pip install django-crispy-forms
+pip install crispy-bootstrap5
+pip install pandas
+pip install numpy
+pip install scipy
+pip install matplotlib
+pip install seaborn
+pip install scikit-learn
+pip install python-decouple
+pip install django-widget-tweaks
+pip install faker

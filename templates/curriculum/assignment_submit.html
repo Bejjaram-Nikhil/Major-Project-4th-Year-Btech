@@ -1,0 +1,55 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}Submit Assignment{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h3>Submit Assignment</h3>
+            <p class="mb-0">{{ assignment.title }}</p>
+        </div>
+        <div class="card-body">
+            {% if existing_submission %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> You have already submitted this assignment. Resubmitting will replace your previous submission.
+            </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="{{ form.submission_file.id_for_label }}" class="form-label">Upload File *</label>
+                    {{ form.submission_file }}
+                    <small class="form-text text-muted">Accepted formats: PDF, DOC, DOCX, ZIP (Max 10MB)</small>
+                    {% if form.submission_file.errors %}
+                        <div class="text-danger">{{ form.submission_file.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.submission_text.id_for_label }}" class="form-label">Additional Notes (Optional)</label>
+                    {{ form.submission_text }}
+                    {% if form.submission_text.errors %}
+                        <div class="text-danger">{{ form.submission_text.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> Please review your submission before submitting. 
+                    Due date: <strong>{{ assignment.due_date|date:"M d, Y H:i" }}</strong>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{% url 'curriculum:assignment_detail' assignment.pk %}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-upload"></i> Submit Assignment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

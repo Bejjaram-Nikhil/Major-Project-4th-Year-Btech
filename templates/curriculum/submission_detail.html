@@ -1,0 +1,87 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}Submission Detail{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="bi bi-file-earmark-check"></i> Submission Details</h4>
+            </div>
+            <div class="card-body">
+                <h5>Assignment: {{ submission.assignment.title }}</h5>
+                <hr>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Student:</strong>
+                        <p>{{ submission.student.get_full_name }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Submitted:</strong>
+                        <p>{{ submission.submitted_at|date:"M d, Y H:i" }}</p>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Submission Text:</strong>
+                    <div class="p-3 bg-light rounded">
+                        {{ submission.submission_text|linebreaks }}
+                    </div>
+                </div>
+                
+                {% if submission.file %}
+                <div class="mb-3">
+                    <strong>Attached File:</strong>
+                    <p><a href="{{ submission.file.url }}" class="btn btn-sm btn-primary" download>
+                        <i class="bi bi-download"></i> Download File
+                    </a></p>
+                </div>
+                {% endif %}
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Status:</strong>
+                        <p>
+                            {% if submission.is_graded %}
+                            <span class="badge bg-success">Graded</span>
+                            {% else %}
+                            <span class="badge bg-warning">Pending Review</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Grade:</strong>
+                        <p>
+                            {% if submission.is_graded %}
+                            <span class="fs-4 text-primary">{{ submission.grade }}/{{ submission.assignment.max_points }}</span>
+                            {% else %}
+                            Not graded yet
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                {% if submission.feedback %}
+                <hr>
+                <div class="mb-3">
+                    <strong>Feedback:</strong>
+                    <div class="alert alert-info">
+                        {{ submission.feedback|linebreaks }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'curriculum:my_submissions' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to My Submissions
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}My Learning Progress{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h2 mb-4"><i class="bi bi-graph-up"></i> My Learning Progress</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="stats-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <i class="bi bi-book"></i>
+                <h3>{{ total_started }}</h3>
+                <p>Modules Started</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                <i class="bi bi-check-circle"></i>
+                <h3>{{ total_completed }}</h3>
+                <p>Modules Completed</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+                <i class="bi bi-percent"></i>
+                <h3>{{ completion_rate|floatformat:0 }}%</h3>
+                <p>Completion Rate</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">All Learning Activities</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Module</th>
+                            <th>Framework</th>
+                            <th>Progress</th>
+                            <th>Time Spent</th>
+                            <th>Started</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for progress in progress_list %}
+                        <tr>
+                            <td>{{ progress.module.title }}</td>
+                            <td>{{ progress.module.framework.title }}</td>
+                            <td>
+                                <div class="progress" style="width: 150px; height: 20px;">
+                                    <div class="progress-bar" style="width: {{ progress.progress_percentage }}%;">
+                                        {{ progress.progress_percentage }}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ progress.time_spent_minutes }} min</td>
+                            <td>{{ progress.started_at|date:"M d, Y" }}</td>
+                            <td>
+                                {% if progress.completed_at %}
+                                    <span class="badge bg-success">Completed</span>
+                                {% else %}
+                                    <span class="badge bg-warning">In Progress</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'ai_literacy:module_detail' progress.module.pk %}" class="btn btn-sm btn-primary">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No learning progress yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

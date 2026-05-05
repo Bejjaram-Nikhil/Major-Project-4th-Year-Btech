@@ -1,0 +1,123 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}{{ assignment.title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'curriculum:assignment_list' %}">Assignments</a></li>
+            <li class="breadcrumb-item active">{{ assignment.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>{{ assignment.title }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Course:</strong> {{ assignment.curriculum.title }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Type:</strong> <span class="badge bg-info">{{ assignment.get_assignment_type_display }}</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Due Date:</strong> {{ assignment.due_date|date:"M d, Y H:i" }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Maximum Points:</strong> {{ assignment.max_points }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h5>Description</h5>
+                    <p>{{ assignment.description }}</p>
+
+                    <h5>Instructions</h5>
+                    <div class="border p-3 rounded bg-light">
+                        {{ assignment.instructions|linebreaks }}
+                    </div>
+
+                    {% if assignment.attachment %}
+                    <hr>
+                    <h5>Reference Material</h5>
+                    <a href="{{ assignment.attachment.url }}" class="btn btn-outline-primary" download>
+                        <i class="bi bi-download"></i> Download Attachment
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            {% if user.role == 'student' %}
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    Your Submission Status
+                </div>
+                <div class="card-body">
+                    {% if user_submission %}
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle"></i> Submitted on {{ user_submission.submitted_at|date:"M d, Y H:i" }}
+                        </div>
+                        
+                        {% if user_submission.grade %}
+                            <h4 class="text-center">Grade: {{ user_submission.grade }}/{{ assignment.max_points }}</h4>
+                            
+                            {% if user_submission.feedback %}
+                            <hr>
+                            <strong>Feedback:</strong>
+                            <p class="mt-2">{{ user_submission.feedback }}</p>
+                            {% endif %}
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="bi bi-hourglass-split"></i> Pending grading
+                            </div>
+                        {% endif %}
+
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'curriculum:submission_detail' user_submission.pk %}" class="btn btn-info">
+                                View Submission
+                            </a>
+                            <a href="{% url 'curriculum:assignment_submit' assignment.pk %}" class="btn btn-warning">
+                                Resubmit
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> Not submitted yet
+                        </div>
+                        
+                        <div class="d-grid">
+                            <a href="{% url 'curriculum:assignment_submit' assignment.pk %}" class="btn btn-success">
+                                <i class="bi bi-upload"></i> Submit Assignment
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if user.role in 'faculty,researcher,admin' %}
+            <div class="card">
+                <div class="card-header">Actions</div>
+                <div class="card-body d-grid gap-2">
+                    <a href="{% url 'curriculum:assignment_edit' assignment.pk %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Edit Assignment
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

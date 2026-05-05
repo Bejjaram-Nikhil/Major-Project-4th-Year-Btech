@@ -1,0 +1,96 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="mb-4"><i class="bi bi-speedometer2"></i> Admin Dashboard</h1>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body text-center">
+                <i class="bi bi-people" style="font-size: 3rem;"></i>
+                <h3 class="mt-3">{{ total_users }}</h3>
+                <p class="mb-0">Total Users</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body text-center">
+                <i class="bi bi-book" style="font-size: 3rem;"></i>
+                <h3 class="mt-3">{{ total_modules }}</h3>
+                <p class="mb-0">Learning Modules</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body text-center">
+                <i class="bi bi-clipboard-check" style="font-size: 3rem;"></i>
+                <h3 class="mt-3">{{ total_assessments }}</h3>
+                <p class="mb-0">Assessments</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body text-center">
+                <i class="bi bi-journal-code" style="font-size: 3rem;"></i>
+                <h3 class="mt-3">{{ total_curriculum }}</h3>
+                <p class="mb-0">Curriculum</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-gear"></i> Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'accounts:user_list' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-person-lines-fill"></i> Manage Users
+                    </a>
+                    <a href="{% url 'ai_literacy:framework_list' %}" class="btn btn-outline-success">
+                        <i class="bi bi-collection"></i> Manage Frameworks
+                    </a>
+                    <a href="{% url 'assessments:questionnaire_list' %}" class="btn btn-outline-info">
+                        <i class="bi bi-clipboard-data"></i> Manage Assessments
+                    </a>
+                    <a href="{% url 'analytics:analytics_dashboard' %}" class="btn btn-outline-warning">
+                        <i class="bi bi-bar-chart-line"></i> View Analytics
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> System Info</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Total Users</span>
+                        <strong>{{ total_users }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Learning Modules</span>
+                        <strong>{{ total_modules }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Assessments</span>
+                        <strong>{{ total_assessments }}</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

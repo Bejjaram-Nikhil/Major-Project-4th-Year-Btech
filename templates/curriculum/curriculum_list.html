@@ -1,0 +1,82 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}Curriculum Integrations{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-journal-code"></i> Curriculum Integrations</h1>
+    {% if user.role in 'admin,faculty,researcher' %}
+    {% comment %}
+    <a href="{% url 'curriculum:curriculum_create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Add Curriculum
+    </a>
+    {% endcomment %}
+    {% endif %}
+</div>
+
+<div class="row">
+    {% for curriculum in curriculums %}
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{{ curriculum.title }}</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ curriculum.description|truncatewords:20 }}</p>
+                <div class="mb-2">
+                    <span class="badge bg-info">{{ curriculum.discipline }}</span>
+                    <span class="badge bg-secondary">{{ curriculum.level }}</span>
+                </div>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-calendar"></i> Created: {{ curriculum.created_at|date:"M d, Y" }}
+                </p>
+            </div>
+            <div class="card-footer bg-light">
+                <a href="{% url 'curriculum:curriculum_detail' curriculum.pk %}" class="btn btn-sm btn-info">
+                    <i class="bi bi-eye"></i> View Details
+                </a>
+                {% comment %}
+                {% if user.role in 'admin,faculty,researcher' %}
+                <a href="{% url 'curriculum:curriculum_update' curriculum.pk %}" class="btn btn-sm btn-warning">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                {% endif %}
+                {% endcomment %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info text-center py-5">
+            <i class="bi bi-info-circle" style="font-size: 3rem;"></i>
+            <h4 class="mt-3">No curriculum integrations found</h4>
+            <p class="text-muted">Curriculum integrations will appear here once they are created.</p>
+            {% if user.role in 'admin,faculty,researcher' %}
+            <p class="text-muted">Contact your administrator to add curriculum content.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if curriculums %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> About Curriculum Integration</h5>
+            </div>
+            <div class="card-body">
+                <p>Curriculum integrations help connect AI literacy concepts with specific academic disciplines and learning objectives.</p>
+                <ul>
+                    <li>Structured learning paths tailored to different disciplines</li>
+                    <li>Clear learning outcomes and assessment methods</li>
+                    <li>Integration with existing course structures</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

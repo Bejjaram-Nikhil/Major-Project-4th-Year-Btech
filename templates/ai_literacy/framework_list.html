@@ -1,0 +1,73 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}AI Literacy Frameworks{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2"><i class="bi bi-collection"></i> AI Literacy Frameworks</h1>
+        {% if user.role in 'faculty,researcher,admin' %}
+        <a href="{% url 'ai_literacy:framework_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Create Framework
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Filter by Discipline</label>
+                    <select name="discipline" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Disciplines</option>
+                        {% for discipline in disciplines %}
+                            <option value="{{ discipline }}" {% if request.GET.discipline == discipline %}selected{% endif %}>
+                                {{ discipline }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Frameworks Grid -->
+    <div class="row">
+        {% for framework in frameworks %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ framework.title }}</h5>
+                    <p class="card-text">{{ framework.description|truncatewords:20 }}</p>
+                    
+                    <div class="mb-3">
+                        <span class="badge bg-info">{{ framework.get_difficulty_level_display }}</span>
+                        {% if framework.discipline %}
+                            <span class="badge bg-secondary">{{ framework.discipline }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="text-muted small mb-3">
+                        <i class="bi bi-book"></i> {{ framework.modules.count }} modules
+                        | <i class="bi bi-person"></i> {{ framework.created_by.get_full_name }}
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{% url 'ai_literacy:framework_detail' framework.pk %}" class="btn btn-primary btn-sm w-100">
+                        <i class="bi bi-eye"></i> View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle"></i> No frameworks available yet.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

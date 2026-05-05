@@ -1,0 +1,112 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}{{ curriculum.title }}{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{% url 'curriculum:curriculum_list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="bi bi-journal-code"></i> {{ curriculum.title }}</h4>
+            </div>
+            <div class="card-body">
+                <h5 class="border-bottom pb-2 mb-3">Description</h5>
+                <p class="lead">{{ curriculum.description }}</p>
+                
+                <hr class="my-4">
+                
+                <h5 class="border-bottom pb-2 mb-3">Curriculum Details</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <strong><i class="bi bi-book text-primary"></i> Discipline:</strong>
+                            <p class="mb-0 mt-2">{{ curriculum.discipline }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <strong><i class="bi bi-bar-chart text-success"></i> Level:</strong>
+                            <p class="mb-0 mt-2">{{ curriculum.level }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <strong><i class="bi bi-clock text-info"></i> Duration:</strong>
+                            <p class="mb-0 mt-2">{{ curriculum.duration_weeks }} weeks</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <strong><i class="bi bi-calendar text-warning"></i> Created:</strong>
+                            <p class="mb-0 mt-2">{{ curriculum.created_at|date:"M d, Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if curriculum.learning_outcomes %}
+                <hr class="my-4">
+                <h5 class="border-bottom pb-2 mb-3">Learning Outcomes</h5>
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle"></i> {{ curriculum.learning_outcomes|linebreaks }}
+                </div>
+                {% endif %}
+                
+                {% if curriculum.assessment_methods %}
+                <hr class="my-4">
+                <h5 class="border-bottom pb-2 mb-3">Assessment Methods</h5>
+                <div class="alert alert-info">
+                    <i class="bi bi-clipboard-check"></i> {{ curriculum.assessment_methods|linebreaks }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-list-check"></i> Quick Info</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-book"></i> Discipline</span>
+                        <strong class="text-primary">{{ curriculum.discipline }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-bar-chart"></i> Level</span>
+                        <strong class="text-success">{{ curriculum.level }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-clock"></i> Duration</span>
+                        <strong class="text-info">{{ curriculum.duration_weeks }} weeks</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-link-45deg"></i> Related</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'curriculum:curriculum_list' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left"></i> All Curricula
+                    </a>
+                    <a href="{% url 'curriculum:assignment_list' %}" class="btn btn-outline-info">
+                        <i class="bi bi-file-earmark-text"></i> View Assignments
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

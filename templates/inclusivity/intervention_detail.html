@@ -1,0 +1,84 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}{{ intervention.name }}{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{% url 'inclusivity:intervention_list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="bi bi-diagram-3"></i> {{ intervention.name }}</h4>
+            </div>
+            <div class="card-body">
+                <h5 class="border-bottom pb-2 mb-3">Description</h5>
+                <p class="lead">{{ intervention.description }}</p>
+                
+                <hr class="my-4">
+                
+                <h5 class="border-bottom pb-2 mb-3">Intervention Details</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <strong><i class="bi bi-tag text-primary"></i> Type:</strong>
+                            <p class="mb-0 mt-2">{{ intervention.intervention_type }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <strong><i class="bi bi-people text-success"></i> Target Group:</strong>
+                            <p class="mb-0 mt-2">{{ intervention.target_group }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if intervention.implementation_guide %}
+                <hr class="my-4">
+                <h5 class="border-bottom pb-2 mb-3">Implementation Guide</h5>
+                <div class="alert alert-info">
+                    <i class="bi bi-book"></i> {{ intervention.implementation_guide|linebreaks }}
+                </div>
+                {% endif %}
+                
+                {% if intervention.expected_outcomes %}
+                <hr class="my-4">
+                <h5 class="border-bottom pb-2 mb-3">Expected Outcomes</h5>
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle"></i> {{ intervention.expected_outcomes|linebreaks }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-list-check"></i> Quick Info</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><i class="bi bi-tag"></i> Type</span>
+                        <strong class="text-primary">{{ intervention.intervention_type }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><i class="bi bi-people"></i> Target</span>
+                        <strong class="text-success">{{ intervention.target_group }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><i class="bi bi-calendar"></i> Created</span>
+                        <strong>{{ intervention.created_at|date:"M d, Y" }}</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

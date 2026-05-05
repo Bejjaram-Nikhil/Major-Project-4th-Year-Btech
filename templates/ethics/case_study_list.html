@@ -1,0 +1,104 @@
+{% extends 'base_auth.html' %}
+
+{% block title %}Ethical Case Studies{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-book text-primary"></i> Ethical Case Studies</h2>
+                {% if user.role in 'faculty,researcher,admin' %}
+                <a href="{% url 'ethics:case_study_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create Case Study
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="difficulty" class="form-label">Difficulty Level</label>
+                            <select name="difficulty" id="difficulty" class="form-select">
+                                <option value="">All Levels</option>
+                                <option value="beginner" {% if request.GET.difficulty == 'beginner' %}selected{% endif %}>Beginner</option>
+                                <option value="intermediate" {% if request.GET.difficulty == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                                <option value="advanced" {% if request.GET.difficulty == 'advanced' %}selected{% endif %}>Advanced</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <a href="{% url 'ethics:case_study_list' %}" class="btn btn-secondary w-100">
+                                <i class="fas fa-redo"></i> Reset
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Case Studies List -->
+            {% if case_studies %}
+            <div class="row">
+                {% for case_study in case_studies %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm {% if not case_study.is_published %}border-warning{% endif %}">
+                        <div class="card-header {% if case_study.is_published %}bg-primary{% else %}bg-warning{% endif %} text-white">
+                            <h5 class="card-title mb-0">{{ case_study.title }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <span class="badge bg-info">{{ case_study.get_difficulty_level_display }}</span>
+                                <span class="badge bg-secondary">{{ case_study.discipline }}</span>
+                                {% if case_study.is_published %}
+                                <span class="badge bg-success">Published</span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark">Draft</span>
+                                {% endif %}
+                            </div>
+                            <p class="card-text">{{ case_study.description|truncatewords:20 }}</p>
+                            <div class="text-muted small mb-3">
+                                <i class="fas fa-user"></i> {{ case_study.created_by.get_full_name|default:case_study.created_by.username }}
+                                <br>
+                                <i class="fas fa-calendar"></i> {{ case_study.created_at|date:"M d, Y" }}
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            {% if user.role in 'faculty,researcher,admin' %}
+                            <!-- Admin/Faculty View: Show Both Buttons -->
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'ethics:case_study_detail' case_study.pk %}" class="btn btn-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <a href="{% url 'ethics:case_study_edit' case_study.pk %}" class="btn btn-warning text-dark fw-bold">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                            </div>
+                            {% else %}
+                            <!-- Student View: Only View Button -->
+                            <a href="{% url 'ethics:case_study_detail' case_study.pk %}" class="btn btn-primary w-100">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No case studies found. 
+                {% if user.role in 'faculty,researcher,admin' %}
+                <a href="{% url 'ethics:case_study_create' %}">Create the first one!</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'base_auth.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Submit Feedback{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-chat-left-text text-primary"></i> Submit Feedback
+                </h2>
+                <a href="{% url 'feedback:my_feedback' %}" class="btn btn-secondary">
+                    <i class="bi bi-list"></i> My Feedback
+                </a>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        We value your feedback! Please share your thoughts, report bugs, or suggest new features.
+                    </p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong><i class="bi bi-exclamation-triangle"></i> Please correct the errors below:</strong>
+                            <ul class="mb-0 mt-2">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.category.id_for_label }}" class="form-label">
+                                <i class="bi bi-tag"></i> Category <span class="text-danger">*</span>
+                            </label>
+                            {{ form.category }}
+                            {% if form.category.help_text %}
+                                <small class="form-text text-muted">{{ form.category.help_text }}</small>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.subject.id_for_label }}" class="form-label">
+                                <i class="bi bi-card-heading"></i> Subject <span class="text-danger">*</span>
+                            </label>
+                            {{ form.subject }}
+                            {% if form.subject.help_text %}
+                                <small class="form-text text-muted">{{ form.subject.help_text }}</small>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.message.id_for_label }}" class="form-label">
+                                <i class="bi bi-chat-left-dots"></i> Message <span class="text-danger">*</span>
+                            </label>
+                            {{ form.message }}
+                            {% if form.message.help_text %}
+                                <small class="form-text text-muted">{{ form.message.help_text }}</small>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send"></i> Submit Feedback
+                            </button>
+                            <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Feedback Guidelines -->
+            <div class="card mt-3 border-info">
+                <div class="card-body bg-light">
+                    <h6 class="card-title text-info">
+                        <i class="bi bi-info-circle"></i> Feedback Guidelines
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li><strong>Bug Report:</strong> Describe the issue, steps to reproduce, and expected behavior</li>
+                        <li><strong>Feature Request:</strong> Explain the feature and how it would improve your experience</li>
+                        <li><strong>General Feedback:</strong> Share your overall experience and suggestions</li>
+                        <li>Be specific and provide as much detail as possible</li>
+                        <li>We typically respond within 1-3 business days</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
